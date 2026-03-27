@@ -146,12 +146,13 @@
     }
     #result-animal-img {
       width: 100%;
-      max-height: 260px;
+      max-height: 280px;
       object-fit: contain;
       display: block;
+      padding: 10px 30px;
     }
     #result-body {
-      padding: 20px 22px;
+      padding: 10px 22px 0;
     }
     #result-congrats {
       color: #ffffff;
@@ -165,45 +166,8 @@
       color: rgba(255,255,255,0.9);
       font-size: 15px;
       line-height: 1.6;
-      margin-bottom: 22px;
     }
     #result-desc strong { color: #ffffff; }
-    #btn-result-cta {
-      display: inline-block;
-      background: #22c55e;
-      color: white;
-      font-weight: 700;
-      font-size: 15px;
-      padding: 15px 32px;
-      border-radius: 12px;
-      text-decoration: none;
-      border: none;
-      cursor: pointer;
-      width: 100%;
-      letter-spacing: 0.5px;
-      transition: background 0.2s, transform 0.1s;
-    }
-    #btn-result-cta:hover { background: #16a34a; transform: scale(1.02); }
-    #btn-result-cta.hidden { display: none; }
-
-    /* ── Loading animation ── */
-    #screen-loading {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 400px;
-      gap: 16px;
-    }
-    .spinner {
-      width: 40px; height: 40px;
-      border: 4px solid rgba(255,255,255,0.2);
-      border-top-color: #4ade80;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    #screen-loading p { color: rgba(255,255,255,0.7); font-size: 15px; }
   </style>
 </head>
 <body>
@@ -340,17 +304,11 @@
         <span class="option-circle"><span class="option-circle-inner"></span></span>
         <span class="option-text">Ajudar meu bebê relaxar para dormir, dia e noite ele não dorme bem nem mesmo no colo.</span>
       </button>
-      <button class="option-btn" onclick="selectOption(this, 4, 1)">
+      <button class="option-btn" onclick="selectOption(this, 4, 2)">
         <span class="option-circle"><span class="option-circle-inner"></span></span>
         <span class="option-text">Não tenho dificuldade com o sono, meu bebê dorme bem e no berço a maioria das vezes.</span>
       </button>
     </div>
-  </div>
-
-  <!-- Loading -->
-  <div class="screen" id="screen-loading">
-    <div class="spinner"></div>
-    <p>Calculando o perfil do seu bebê...</p>
   </div>
 
   <!-- Result -->
@@ -360,7 +318,6 @@
     <div id="result-body">
       <p id="result-congrats">PARABÉNS</p>
       <p id="result-desc"></p>
-      <a id="btn-result-cta" href="#" target="_blank">VEJA O RESULTADO</a>
     </div>
   </div>
 
@@ -369,67 +326,47 @@
 <script>
   // ─── Quiz state ───────────────────────────────────────────────
   const TOTAL_QUESTIONS = 5;
-  let currentScreen = 0;        // 0–4 = questions, 5 = loading, 6 = result
+  let currentScreen = 0;
   let score = 0;
-  const answers = new Array(TOTAL_QUESTIONS).fill(null); // stores points per question
+  const answers = new Array(TOTAL_QUESTIONS).fill(null);
 
   // ─── Result profiles ──────────────────────────────────────────
-  // Score → profile mapping
   const PROFILES = {
-    1: {
-      name: 'Bebê Preguicinha',
-      animal: 'Preguicinha',
-      emoji: '🦥',
-      desc: 'você tem um <strong>Bebê Preguicinha</strong> que dorme bem de dia e de noite, em qualquer lugar e de forma plena!',
-      url: null,   // shown inline, no CTA button
-      img: 'https://em-content.zobj.net/source/microsoft-teams/337/sloth_1f9a5.png'
-    },
     2: {
       name: 'Bebê Coruja',
       animal: 'Coruja',
-      emoji: '🦉',
       desc: 'você tem um <strong>Bebê Coruja</strong>! Ele dorme bem nas sonecas do dia, mas a noite ainda é desafiadora — com despertares frequentes.',
-      url: 'https://db.manualdorecemnascido.com.br/quiz-coruja-inlead/',
-      img: 'https://em-content.zobj.net/source/microsoft-teams/337/owl_1f989.png'
+      img: 'coruja.jpg'
     },
     3: {
       name: 'Bebê Leão',
       animal: 'Leão',
-      emoji: '🦁',
       desc: 'você tem um <strong>Bebê Leão</strong>! As sonecas do dia são o maior desafio — à noite ele dorme melhor, mas durante o dia é uma luta.',
-      url: 'https://db.manualdorecemnascido.com.br/quiz-leao-inlead/',
-      img: 'https://em-content.zobj.net/source/microsoft-teams/337/lion_1f981.png'
+      img: 'leao.jpg'
     },
     4: {
       name: 'Bebê Suricato',
       animal: 'Suricato',
-      emoji: '🐾',
       desc: 'você tem um <strong>Bebê Suricato</strong>! Ele precisa de apoio para relaxar e adormecer — tanto de dia quanto de noite.',
-      url: 'https://db.manualdorecemnascido.com.br/quiz-suricato-inlead/',
-      img: 'https://em-content.zobj.net/source/microsoft-teams/337/paw-prints_1f43e.png'
+      img: 'suricato.jpg'
     },
     5: {
       name: 'Bebê Canguru',
       animal: 'Canguru',
-      emoji: '🦘',
       desc: 'você tem um <strong>Bebê Canguru</strong>! A grande dificuldade é o berço — ele dorme profundamente no colo ou colado em você, mas resiste ao berço.',
-      url: 'https://db.manualdorecemnascido.com.br/quiz-canguru-inlead/',
-      img: 'https://em-content.zobj.net/source/microsoft-teams/337/kangaroo_1f998.png'
+      img: 'canguru.jpg'
     },
     coala: {
       name: 'Bebê Coala',
       animal: 'Coala',
-      emoji: '🐨',
       desc: 'você tem um <strong>Bebê Coala</strong>! Bebês recém-nascidos têm um sono naturalmente irregular — isso é completamente normal nesta fase.',
-      url: 'https://db.manualdorecemnascido.com.br/quiz-coala-inlead/',
-      img: 'https://em-content.zobj.net/source/microsoft-teams/337/koala_1f428.png'
+      img: 'coala.jpg'
     }
   };
 
   // ─── Helpers ──────────────────────────────────────────────────
   function getScreen(idx) {
     if (idx < TOTAL_QUESTIONS) return document.getElementById('screen-' + idx);
-    if (idx === TOTAL_QUESTIONS) return document.getElementById('screen-loading');
     return document.getElementById('screen-result');
   }
 
@@ -438,34 +375,27 @@
     getScreen(idx).classList.add('active');
     currentScreen = idx;
 
-    // Back button: show only on Q2–Q5
     document.getElementById('btn-back').style.display = (idx > 0 && idx < TOTAL_QUESTIONS) ? 'block' : 'none';
 
-    // Progress bar: advance per question (0 on Q1, 100% on result)
     const pct = idx < TOTAL_QUESTIONS ? (idx / TOTAL_QUESTIONS) * 100 : 100;
     document.getElementById('progress-bar-fill').style.width = pct + '%';
   }
 
   // ─── Option selection ─────────────────────────────────────────
   function selectOption(btn, questionIdx, points) {
-    // Visual feedback
     const container = btn.closest('.options');
     container.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
 
-    // Store score contribution from this question
     const prev = answers[questionIdx] || 0;
     score = score - prev + points;
     answers[questionIdx] = points;
 
-    // Auto-advance after short delay
     setTimeout(() => {
       if (questionIdx < TOTAL_QUESTIONS - 1) {
         showScreen(questionIdx + 1);
       } else {
-        // Last question — show loading then result
-        showScreen(TOTAL_QUESTIONS);
-        setTimeout(showResult, 1200);
+        showResult();
       }
     }, 280);
   }
@@ -483,22 +413,15 @@
     if (score >= 6) {
       profile = PROFILES.coala;
     } else {
-      profile = PROFILES[score] || PROFILES[1];
+      // score 1 redirects to Coruja (score 2) — Preguicinha removed
+      profile = PROFILES[score] || PROFILES[2];
     }
 
     document.getElementById('result-animal-img').src = profile.img;
     document.getElementById('result-animal-img').alt = profile.animal;
     document.getElementById('result-desc').innerHTML = profile.desc;
 
-    const cta = document.getElementById('btn-result-cta');
-    if (profile.url) {
-      cta.href = profile.url;
-      cta.classList.remove('hidden');
-    } else {
-      cta.classList.add('hidden');
-    }
-
-    showScreen(TOTAL_QUESTIONS + 1);
+    showScreen(TOTAL_QUESTIONS);
   }
 
   // ─── Init ────────────────────────────────────────────────────
